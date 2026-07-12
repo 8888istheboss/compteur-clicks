@@ -18,6 +18,14 @@ const mimeTypes = {
   '.ico': 'image/x-icon'
 };
 
+function createDefaultMissions() {
+  return [
+    { id: 'clicks', label: 'Faire 50 clics', target: 50, reward: 50, completed: false, claimed: false },
+    { id: 'level', label: 'Atteindre le niveau 3', target: 3, reward: 100, completed: false, claimed: false },
+    { id: 'cards', label: 'Acheter 2 cartes', target: 2, reward: 150, completed: false, claimed: false }
+  ];
+}
+
 function normalizeUser(user) {
   return {
     username: user.username,
@@ -26,7 +34,10 @@ function normalizeUser(user) {
     score: Number(user.score) || 0,
     xp: Number(user.xp) || 0,
     level: Number(user.level) || 1,
-    cards: Array.isArray(user.cards) ? user.cards : []
+    cards: Array.isArray(user.cards) ? user.cards : [],
+    missions: Array.isArray(user.missions) && user.missions.length > 0
+      ? user.missions
+      : createDefaultMissions()
   };
 }
 
@@ -86,7 +97,8 @@ const server = http.createServer((req, res) => {
           score: 0,
           xp: 0,
           level: 1,
-          cards: []
+          cards: [],
+          missions: createDefaultMissions()
         });
         writeUsers(users);
         sendJson(res, 201, { message: 'Compte créé avec succès.' });

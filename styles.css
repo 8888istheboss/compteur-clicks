@@ -237,12 +237,54 @@ button.small {
   50% { transform: scale(1.03); }
 }
 
+@keyframes pop {
+  0% { opacity: 0; transform: translateY(8px) scale(0.97); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
 .shop {
   margin-top: 1rem;
   padding: 1rem;
   border-radius: 18px;
   background: rgba(15, 23, 42, 0.8);
   border: 1px solid #334155;
+}
+
+.celebration-banner {
+  margin-top: 1rem;
+  padding: 0.8rem 1rem;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #f59e0b, #ef4444);
+  color: white;
+  font-weight: 700;
+  text-align: center;
+  animation: pop 0.35s ease;
+}
+
+.celebration-banner.hidden {
+  display: none;
+}
+
+.bonus-panel {
+  display: grid;
+  gap: 0.8rem;
+  margin-top: 1rem;
+}
+
+.bonus-card {
+  padding: 1rem;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.25), rgba(37, 99, 235, 0.25));
+  border: 1px solid rgba(129, 140, 248, 0.3);
+}
+
+.mission-list {
+  padding-left: 1.1rem;
+  margin: 0.4rem 0 0;
+}
+
+.mission-list li {
+  margin-bottom: 0.35rem;
 }
 
 .shop-header p {

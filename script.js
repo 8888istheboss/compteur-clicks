@@ -5,6 +5,11 @@ const cardCatalog = [
   { id: 'factory', name: 'Usine', emoji: '🏭', basePrice: 650, cps: 8, description: 'Une usine brillante de clics.' },
   { id: 'nova', name: 'Nova Core', emoji: '✨', basePrice: 3200, cps: 24, description: 'Le summum du click farming.' }
 ];
+const defaultMissions = [
+  { id: 'clicks', label: 'Faire 50 clics', target: 50, reward: 50 },
+  { id: 'level', label: 'Atteindre le niveau 3', target: 3, reward: 100 },
+  { id: 'cards', label: 'Acheter 2 cartes', target: 2, reward: 150 }
+];
 
 const authPanel = document.getElementById('authPanel');
 const gamePanel = document.getElementById('gamePanel');
@@ -28,6 +33,9 @@ const resetButton = document.getElementById('resetButton');
 const logoutButton = document.getElementById('logoutButton');
 const leaderboardList = document.getElementById('leaderboardList');
 const cardListElement = document.getElementById('cardList');
+const claimGiftButton = document.getElementById('claimGiftButton');
+const missionListElement = document.getElementById('missionList');
+const celebrationBanner = document.getElementById('celebrationBanner');
 
 let users = [];
 let currentUser = null;
@@ -38,6 +46,14 @@ let saveLoop = null;
 
 function formatNumber(value) {
   return new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 1 }).format(value);
+}
+
+function ensureProfileState() {
+  if (!profile) return;
+  profile.cards = Array.isArray(profile.cards) ? profile.cards : [];
+  profile.missions = Array.isArray(profile.missions) && profile.missions.length > 0
+    ? profile.missions
+    : defaultMissions.map((mission) => ({ ...mission, completed: false, claimed: false }));
 }
 
 function getCardOwnedCount(cardId) {
@@ -57,8 +73,18 @@ function getClickPower() {
   return 1 + Math.floor((profile.level || 1) / 2);
 }
 
+function celebrate(text) {
+  celebrationBanner.textContent = text;
+  celebrationBanner.classList.remove('hidden');
+  clearTimeout(celebrate.timeout);
+  celebrate.timeout = setTimeout(() => {
+    celebrationBanner.classList.add('hidden');
+  }, 1800);
+}
+
 function updateDisplay() {
   if (!profile) return;
+  ensureProfileState();
 
   const xpNeeded = 100;
   const xpProgress = Math.min(100, (profile.xp % xpNeeded) / xpNeeded * 100);
@@ -74,6 +100,7 @@ function updateDisplay() {
   playerName.textContent = profile.username;
   renderLeaderboard();
   renderShop();
+  renderMissions();
 }
 
 function setMode(nextMode) {
@@ -120,6 +147,23 @@ function renderShop() {
   });
 }
 
+function renderMissions() {
+  if (!profile) return;
+  ensureProfileState();
+  missionListElement.innerHTML = '';
+  profile.missions.forEach((mission) => {
+    const progress = mission.id === 'clicks'
+      ? Math.min(profile.score, mission.target)
+      : mission.id === 'level'
+        ? profile.level
+        : (profile.cards || []).reduce((sum, card) => sum + card.owned, 0);
+    const done = progress >= mission.target;
+    const li = document.createElement('li');
+    li.innerHTML = `${mission.label} — ${Math.min(progress, mission.target)}/${mission.target} ${done ? '✅' : ''}`;
+    missionListElement.appendChild(li);
+  });
+}
+
 function renderLeaderboard() {
   const sortedUsers = [...users].sort((a, b) => b.bestScore - a.bestScore);
   leaderboardList.innerHTML = '';
@@ -135,6 +179,33 @@ function renderLeaderboard() {
     item.innerHTML = `<span>#${index + 1}</span> <strong>${user.username}</strong> — ${formatNumber(user.bestScore)} pts`;
     leaderboardList.appendChild(item);
   });
+}
+
+function checkMissionProgress() {
+  if (!profile) return;
+  ensureProfileState();
+  let completedAny = false;
+  profile.missions.forEach((mission) => {
+    if (mission.completed || mission.claimed) return;
+    const progress = mission.id === 'clicks'
+      ? Math.min(profile.score, mission.target)
+      : mission.id === 'level'
+        ? profile.level
+        : (profile.cards || []).reduce((sum, card) => sum + card.owned, 0);
+    if (progress >= mission.target) {
+      mission.completed = true;
+      mission.claimed = true;
+      profile.xp += mission.reward;
+      profile.score += mission.reward;
+      applyLeveling();
+      completedAny = true;
+      celebrate(`🎉 Mission complétée : ${mission.label} +${mission.reward} XP`);
+    }
+  });
+  if (completedAny) {
+    updateDisplay();
+    saveProfile();
+  }
 }
 
 function addCard(cardId) {
@@ -157,6 +228,7 @@ function addCard(cardId) {
   }
   applyLeveling();
   updateDisplay();
+  checkMissionProgress();
   saveProfile();
   showMessage(`${card.name} ajouté à votre empire !`);
 }
@@ -180,6 +252,7 @@ function sellCard(cardId) {
   }
   applyLeveling();
   updateDisplay();
+  checkMissionProgress();
   saveProfile();
   showMessage(`${card.name} vendu pour ${formatNumber(refund)} clicks.`);
 }
@@ -187,7 +260,7 @@ function sellCard(cardId) {
 function applyLeveling() {
   const nextLevel = 1 + Math.floor(profile.xp / 100);
   profile.level = nextLevel;
-  if (profile.score > (profile.bestScore || 0)) {
+  if ((profile.score || 0) > (profile.bestScore || 0)) {
     profile.bestScore = Math.floor(profile.score);
   }
 }
@@ -198,6 +271,17 @@ function showMessage(text) {
   showMessage.timeout = setTimeout(() => {
     saveMessage.textContent = 'Votre progression est sauvegardée automatiquement.';
   }, 1400);
+}
+
+function claimGift() {
+  if (!profile) return;
+  profile.score += 100;
+  profile.xp += 20;
+  applyLeveling();
+  updateDisplay();
+  checkMissionProgress();
+  saveProfile();
+  celebrate('🎁 Cadeau récupéré : +100 clicks !');
 }
 
 function startAutoLoop() {
@@ -212,6 +296,7 @@ function startAutoLoop() {
         profile.bestScore = Math.floor(profile.score);
       }
       updateDisplay();
+      checkMissionProgress();
     }
   }, 100);
 }
@@ -231,6 +316,7 @@ async function saveProfile() {
       profile.xp = Number(data.xp) || profile.xp;
       profile.level = Number(data.level) || profile.level;
       profile.cards = Array.isArray(data.cards) ? data.cards : profile.cards;
+      profile.missions = Array.isArray(data.missions) && data.missions.length > 0 ? data.missions : profile.missions;
       updateDisplay();
     }
   } catch {
@@ -267,8 +353,12 @@ async function loginUser(username, password) {
     score: Number(data.score) || 0,
     xp: Number(data.xp) || 0,
     level: Number(data.level) || 1,
-    cards: Array.isArray(data.cards) ? data.cards : []
+    cards: Array.isArray(data.cards) ? data.cards : [],
+    missions: Array.isArray(data.missions) && data.missions.length > 0
+      ? data.missions
+      : defaultMissions.map((mission) => ({ ...mission, completed: false, claimed: false }))
   };
+  ensureProfileState();
   localStorage.setItem(ACTIVE_USER_KEY, profile.username);
   await loadLeaderboard();
   renderGame();
@@ -319,6 +409,7 @@ clickButton.addEventListener('click', () => {
   profile.xp += 2;
   applyLeveling();
   updateDisplay();
+  checkMissionProgress();
   saveProfile();
   showMessage('Clic !');
 });
@@ -330,10 +421,13 @@ resetButton.addEventListener('click', () => {
   profile.xp = 0;
   profile.level = 1;
   profile.cards = [];
+  profile.missions = defaultMissions.map((mission) => ({ ...mission, completed: false, claimed: false }));
   updateDisplay();
   saveProfile();
   showMessage('Session réinitialisée.');
 });
+
+claimGiftButton.addEventListener('click', () => claimGift());
 
 logoutButton.addEventListener('click', () => {
   clearInterval(autoLoop);
@@ -372,8 +466,12 @@ async function init() {
         score: Number(rememberedUser.score) || 0,
         xp: Number(rememberedUser.xp) || 0,
         level: Number(rememberedUser.level) || 1,
-        cards: Array.isArray(rememberedUser.cards) ? rememberedUser.cards : []
+        cards: Array.isArray(rememberedUser.cards) ? rememberedUser.cards : [],
+        missions: Array.isArray(rememberedUser.missions) && rememberedUser.missions.length > 0
+          ? rememberedUser.missions
+          : defaultMissions.map((mission) => ({ ...mission, completed: false, claimed: false }))
       };
+      ensureProfileState();
       renderGame();
       startAutoLoop();
       if (!saveLoop) {
