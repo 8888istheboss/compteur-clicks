@@ -3,14 +3,14 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Compteur de clics - Classement</title>
+    <title>Click Quest</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <main class="app">
       <section class="card auth-card" id="authPanel">
-        <h1>Compteur de clics</h1>
-        <p class="subtitle">Créez un compte ou connectez-vous pour sauvegarder votre score et voir le classement.</p>
+        <h1>Click Quest</h1>
+        <p class="subtitle">Créez un compte, progressez en XP, débloquez des cartes et faites grimper votre score.</p>
 
         <div class="mode-switch" role="tablist" aria-label="Mode d'authentification">
           <button class="mode-btn active" id="loginModeBtn" type="button">Connexion</button>
@@ -36,28 +36,47 @@
         <div class="game-header">
           <div>
             <h2>Bienvenue, <span id="playerName">Joueur</span></h2>
-            <p class="subtitle">Cliquez pour faire monter votre score.</p>
+            <p class="subtitle">Cliquez, faites tourner vos automates, vendez au bon moment et grimperez en niveau.</p>
           </div>
           <button id="logoutButton" class="secondary small">Déconnexion</button>
         </div>
 
-        <div class="score-grid">
-          <div class="score-box">
-            <span class="label">Score actuel</span>
+        <div class="hero-panel">
+          <div class="score-box main">
+            <span class="label">Clicks</span>
             <div id="counter" class="counter">0</div>
+            <div class="micro">+<span id="clickValue">1</span> par clic</div>
           </div>
-          <div class="score-box">
-            <span class="label">Meilleur score</span>
-            <div id="bestScore" class="counter small">0</div>
+          <div class="score-box alt">
+            <span class="label">Niveau</span>
+            <div id="level" class="counter small">1</div>
+            <div class="micro" id="xpText">0 / 100 XP</div>
           </div>
+        </div>
+
+        <div class="xp-bar" aria-label="Progression XP">
+          <div id="xpFill" class="xp-fill"></div>
+        </div>
+
+        <div class="stats-row">
+          <div class="stat-pill">⚡ Auto-clicks <span id="cpsDisplay">0/s</span></div>
+          <div class="stat-pill">🏆 Meilleur <span id="bestScoreDisplay">0</span></div>
         </div>
 
         <div class="actions">
-          <button id="clickButton" class="primary">Clic !</button>
-          <button id="resetButton" class="secondary">Réinitialiser</button>
+          <button id="clickButton" class="primary pulse">⚡ Clic !</button>
+          <button id="resetButton" class="secondary">Reset</button>
         </div>
 
-        <p id="saveMessage" class="message" aria-live="polite">Votre score est sauvegardé automatiquement.</p>
+        <p id="saveMessage" class="message" aria-live="polite">Votre progression est sauvegardée automatiquement.</p>
+
+        <div class="shop">
+          <div class="shop-header">
+            <h3>🃏 Cartes de production</h3>
+            <p>Achetez pour générer des clicks automatiques, vendez pour récupérer la moitié du prix.</p>
+          </div>
+          <div id="cardList" class="card-list"></div>
+        </div>
 
         <div class="leaderboard">
           <h3>Classement</h3>

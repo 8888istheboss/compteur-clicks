@@ -1,4 +1,10 @@
 const ACTIVE_USER_KEY = 'counter-demo-active-user';
+const cardCatalog = [
+  { id: 'cursor', name: 'Curseur', emoji: '🖱️', basePrice: 25, cps: 0.5, description: 'Un mini automate qui clique tout seul.' },
+  { id: 'bot', name: 'Bot de clic', emoji: '🤖', basePrice: 120, cps: 2, description: 'Un petit robot de production.' },
+  { id: 'factory', name: 'Usine', emoji: '🏭', basePrice: 650, cps: 8, description: 'Une usine brillante de clics.' },
+  { id: 'nova', name: 'Nova Core', emoji: '✨', basePrice: 3200, cps: 24, description: 'Le summum du click farming.' }
+];
 
 const authPanel = document.getElementById('authPanel');
 const gamePanel = document.getElementById('gamePanel');
@@ -11,23 +17,63 @@ const authMessage = document.getElementById('authMessage');
 const saveMessage = document.getElementById('saveMessage');
 const playerName = document.getElementById('playerName');
 const counterElement = document.getElementById('counter');
-const bestScoreElement = document.getElementById('bestScore');
+const levelElement = document.getElementById('level');
+const xpTextElement = document.getElementById('xpText');
+const xpFillElement = document.getElementById('xpFill');
+const cpsDisplayElement = document.getElementById('cpsDisplay');
+const bestScoreDisplayElement = document.getElementById('bestScoreDisplay');
+const clickValueElement = document.getElementById('clickValue');
 const clickButton = document.getElementById('clickButton');
 const resetButton = document.getElementById('resetButton');
 const logoutButton = document.getElementById('logoutButton');
 const leaderboardList = document.getElementById('leaderboardList');
+const cardListElement = document.getElementById('cardList');
 
 let users = [];
 let currentUser = null;
-let currentScore = 0;
+let profile = null;
 let mode = 'login';
+let autoLoop = null;
+let saveLoop = null;
 
-async function loadLeaderboard() {
-  const response = await fetch('/api/users');
-  users = await response.json();
-  if (currentUser) {
-    renderLeaderboard();
-  }
+function formatNumber(value) {
+  return new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 1 }).format(value);
+}
+
+function getCardOwnedCount(cardId) {
+  const card = profile?.cards?.find((entry) => entry.id === cardId);
+  return card ? card.owned : 0;
+}
+
+function getCardPrice(card, ownedCount) {
+  return Math.round(card.basePrice * Math.pow(1.25, ownedCount));
+}
+
+function calculateCps() {
+  return cardCatalog.reduce((sum, card) => sum + card.cps * getCardOwnedCount(card.id), 0);
+}
+
+function getClickPower() {
+  return 1 + Math.floor((profile.level || 1) / 2);
+}
+
+function updateDisplay() {
+  if (!profile) return;
+
+  const xpNeeded = 100;
+  const xpProgress = Math.min(100, (profile.xp % xpNeeded) / xpNeeded * 100);
+  const level = profile.level || 1;
+
+  counterElement.textContent = formatNumber(profile.score || 0);
+  levelElement.textContent = level;
+  xpTextElement.textContent = `${profile.xp % xpNeeded}/${xpNeeded} XP`;
+  xpFillElement.style.width = `${xpProgress}%`;
+  clickValueElement.textContent = getClickPower();
+  cpsDisplayElement.textContent = `${formatNumber(calculateCps())}/s`;
+  bestScoreDisplayElement.textContent = formatNumber(profile.bestScore || 0);
+  playerName.textContent = profile.username;
+  renderLeaderboard();
+  renderShop();
 }
 
 function setMode(nextMode) {
@@ -41,7 +87,7 @@ function setMode(nextMode) {
 }
 
 function renderGame() {
-  if (!currentUser) {
+  if (!profile) {
     authPanel.classList.remove('hidden');
     gamePanel.classList.add('hidden');
     return;
@@ -49,10 +95,29 @@ function renderGame() {
 
   authPanel.classList.add('hidden');
   gamePanel.classList.remove('hidden');
-  playerName.textContent = currentUser.username;
-  counterElement.textContent = currentScore;
-  bestScoreElement.textContent = currentUser.bestScore;
-  renderLeaderboard();
+  updateDisplay();
+}
+
+function renderShop() {
+  cardListElement.innerHTML = '';
+  cardCatalog.forEach((card) => {
+    const ownedCount = getCardOwnedCount(card.id);
+    const price = getCardPrice(card, ownedCount);
+    const item = document.createElement('div');
+    item.className = 'shop-card';
+    item.innerHTML = `
+      <div>
+        <strong>${card.emoji} ${card.name}</strong>
+        <div class="meta">${card.description}</div>
+        <div class="meta">+${card.cps}/s • possédé : ${ownedCount}</div>
+      </div>
+      <div class="shop-actions">
+        <button class="primary" data-action="buy" data-card="${card.id}">Acheter ${formatNumber(price)}</button>
+        <button class="secondary" data-action="sell" data-card="${card.id}" ${ownedCount > 0 ? '' : 'disabled'}>Vendre</button>
+      </div>
+    `;
+    cardListElement.appendChild(item);
+  });
 }
 
 function renderLeaderboard() {
@@ -66,27 +131,119 @@ function renderLeaderboard() {
 
   sortedUsers.slice(0, 10).forEach((user, index) => {
     const item = document.createElement('li');
-    item.className = user.username === currentUser?.username ? 'highlight' : '';
-    item.innerHTML = `<span>#${index + 1}</span> <strong>${user.username}</strong> — ${user.bestScore} points`;
+    item.className = user.username === profile?.username ? 'highlight' : '';
+    item.innerHTML = `<span>#${index + 1}</span> <strong>${user.username}</strong> — ${formatNumber(user.bestScore)} pts`;
     leaderboardList.appendChild(item);
   });
 }
 
-async function saveCurrentScore() {
-  if (!currentUser) return;
-  const response = await fetch('/api/score', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ username: currentUser.username, score: currentScore })
-  });
-  const data = await response.json();
-  currentUser.bestScore = data.bestScore;
-  bestScoreElement.textContent = currentUser.bestScore;
-  renderLeaderboard();
-  saveMessage.textContent = 'Score sauvegardé !';
-  setTimeout(() => {
-    saveMessage.textContent = 'Votre score est sauvegardé automatiquement.';
-  }, 1200);
+function addCard(cardId) {
+  const card = cardCatalog.find((entry) => entry.id === cardId);
+  if (!card) return;
+  const ownedCount = getCardOwnedCount(cardId);
+  const price = getCardPrice(card, ownedCount);
+  if ((profile.score || 0) < price) {
+    showMessage(`Tu as besoin de ${formatNumber(price)} clicks pour acheter ${card.name}.`);
+    return;
+  }
+
+  profile.score -= price;
+  profile.xp += Math.round(price / 8);
+  const existing = profile.cards.find((entry) => entry.id === cardId);
+  if (existing) {
+    existing.owned += 1;
+  } else {
+    profile.cards.push({ id: cardId, owned: 1 });
+  }
+  applyLeveling();
+  updateDisplay();
+  saveProfile();
+  showMessage(`${card.name} ajouté à votre empire !`);
+}
+
+function sellCard(cardId) {
+  const card = cardCatalog.find((entry) => entry.id === cardId);
+  if (!card) return;
+  const ownedCount = getCardOwnedCount(cardId);
+  if (ownedCount <= 0) return;
+
+  const price = getCardPrice(card, ownedCount - 1);
+  const refund = Math.floor(price / 2);
+  profile.score += refund;
+  profile.xp += 5;
+  const existing = profile.cards.find((entry) => entry.id === cardId);
+  if (existing) {
+    existing.owned -= 1;
+    if (existing.owned <= 0) {
+      profile.cards = profile.cards.filter((entry) => entry.id !== cardId);
+    }
+  }
+  applyLeveling();
+  updateDisplay();
+  saveProfile();
+  showMessage(`${card.name} vendu pour ${formatNumber(refund)} clicks.`);
+}
+
+function applyLeveling() {
+  const nextLevel = 1 + Math.floor(profile.xp / 100);
+  profile.level = nextLevel;
+  if (profile.score > (profile.bestScore || 0)) {
+    profile.bestScore = Math.floor(profile.score);
+  }
+}
+
+function showMessage(text) {
+  saveMessage.textContent = text;
+  clearTimeout(showMessage.timeout);
+  showMessage.timeout = setTimeout(() => {
+    saveMessage.textContent = 'Votre progression est sauvegardée automatiquement.';
+  }, 1400);
+}
+
+function startAutoLoop() {
+  clearInterval(autoLoop);
+  autoLoop = setInterval(() => {
+    if (!profile) return;
+    const cps = calculateCps();
+    if (cps > 0) {
+      profile.score += cps / 10;
+      profile.score = Number(profile.score.toFixed(2));
+      if (profile.score > (profile.bestScore || 0)) {
+        profile.bestScore = Math.floor(profile.score);
+      }
+      updateDisplay();
+    }
+  }, 100);
+}
+
+async function saveProfile() {
+  if (!profile || !currentUser) return;
+  try {
+    const response = await fetch('/api/profile', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(profile)
+    });
+    const data = await response.json();
+    if (response.ok) {
+      profile.bestScore = Number(data.bestScore) || profile.bestScore;
+      profile.score = Number(data.score) || profile.score;
+      profile.xp = Number(data.xp) || profile.xp;
+      profile.level = Number(data.level) || profile.level;
+      profile.cards = Array.isArray(data.cards) ? data.cards : profile.cards;
+      updateDisplay();
+    }
+  } catch {
+    // no-op
+  }
+}
+
+async function loadLeaderboard() {
+  const response = await fetch('/api/users');
+  users = await response.json();
+  if (profile) {
+    renderLeaderboard();
+  }
 }
 
 async function loginUser(username, password) {
@@ -102,12 +259,24 @@ async function loginUser(username, password) {
     return;
   }
 
-  currentUser = { username: data.username, bestScore: data.bestScore };
-  currentScore = 0;
-  localStorage.setItem(ACTIVE_USER_KEY, currentUser.username);
+  currentUser = { username: data.username };
+  profile = {
+    username: data.username,
+    password,
+    bestScore: Number(data.bestScore) || 0,
+    score: Number(data.score) || 0,
+    xp: Number(data.xp) || 0,
+    level: Number(data.level) || 1,
+    cards: Array.isArray(data.cards) ? data.cards : []
+  };
+  localStorage.setItem(ACTIVE_USER_KEY, profile.username);
   await loadLeaderboard();
   renderGame();
-  saveMessage.textContent = 'Bienvenue !';
+  startAutoLoop();
+  if (!saveLoop) {
+    saveLoop = setInterval(() => saveProfile(), 3000);
+  }
+  showMessage('Bienvenue dans Click Quest !');
 }
 
 async function registerUser(username, password, confirmPassword) {
@@ -145,25 +314,48 @@ authForm.addEventListener('submit', (event) => {
 });
 
 clickButton.addEventListener('click', () => {
-  currentScore += 1;
-  counterElement.textContent = currentScore;
-  saveCurrentScore();
+  if (!profile) return;
+  profile.score += getClickPower();
+  profile.xp += 2;
+  applyLeveling();
+  updateDisplay();
+  saveProfile();
+  showMessage('Clic !');
 });
 
 resetButton.addEventListener('click', () => {
-  currentScore = 0;
-  counterElement.textContent = currentScore;
-  saveMessage.textContent = 'Le score courant a été réinitialisé.';
-  setTimeout(() => {
-    saveMessage.textContent = 'Votre score est sauvegardé automatiquement.';
-  }, 1200);
+  if (!profile) return;
+  profile.score = 0;
+  profile.bestScore = 0;
+  profile.xp = 0;
+  profile.level = 1;
+  profile.cards = [];
+  updateDisplay();
+  saveProfile();
+  showMessage('Session réinitialisée.');
 });
 
 logoutButton.addEventListener('click', () => {
+  clearInterval(autoLoop);
+  clearInterval(saveLoop);
+  autoLoop = null;
+  saveLoop = null;
   currentUser = null;
+  profile = null;
   localStorage.removeItem(ACTIVE_USER_KEY);
   renderGame();
   authMessage.textContent = 'Vous êtes déconnecté.';
+});
+
+cardListElement.addEventListener('click', (event) => {
+  const button = event.target.closest('button[data-action]');
+  if (!button || !profile) return;
+  const { action, card } = button.dataset;
+  if (action === 'buy') {
+    addCard(card);
+  } else if (action === 'sell') {
+    sellCard(card);
+  }
 });
 
 async function init() {
@@ -172,9 +364,21 @@ async function init() {
   if (autoLogin) {
     const rememberedUser = users.find((entry) => entry.username === autoLogin);
     if (rememberedUser) {
-      currentUser = { username: rememberedUser.username, bestScore: rememberedUser.bestScore };
-      currentScore = 0;
+      currentUser = { username: rememberedUser.username };
+      profile = {
+        username: rememberedUser.username,
+        password: rememberedUser.password,
+        bestScore: Number(rememberedUser.bestScore) || 0,
+        score: Number(rememberedUser.score) || 0,
+        xp: Number(rememberedUser.xp) || 0,
+        level: Number(rememberedUser.level) || 1,
+        cards: Array.isArray(rememberedUser.cards) ? rememberedUser.cards : []
+      };
       renderGame();
+      startAutoLoop();
+      if (!saveLoop) {
+        saveLoop = setInterval(() => saveProfile(), 3000);
+      }
     } else {
       renderGame();
     }

@@ -12,27 +12,25 @@ body {
   min-height: 100vh;
   display: grid;
   place-items: center;
-  background: linear-gradient(135deg, #111827, #1f2937);
-  color: #f9fafb;
+  padding: 1.2rem;
+  background: radial-gradient(circle at top, #1d4ed8, #0f172a 70%);
+  color: #f8fafc;
 }
 
 .app {
-  width: min(92vw, 540px);
+  width: min(96vw, 620px);
 }
 
 .card {
-  padding: 2rem;
+  padding: 1.4rem;
   border-radius: 24px;
-  background: rgba(17, 24, 39, 0.9);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+  background: rgba(15, 23, 42, 0.9);
+  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(148, 163, 184, 0.15);
 }
 
 .auth-card {
   text-align: center;
-}
-
-.game-card {
-  display: block;
 }
 
 h1,
@@ -46,7 +44,7 @@ h1 {
 }
 
 .subtitle {
-  margin: 0 0 1.25rem;
+  margin: 0 0 1rem;
   color: #cbd5e1;
 }
 
@@ -65,8 +63,8 @@ h1 {
 }
 
 .mode-btn.active {
-  background: #22c55e;
-  border-color: #22c55e;
+  background: linear-gradient(135deg, #22c55e, #14b8a6);
+  border-color: transparent;
 }
 
 .auth-form {
@@ -112,35 +110,78 @@ input:focus {
   margin-bottom: 1rem;
 }
 
-.score-grid {
+.hero-panel {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1rem;
-  margin-bottom: 1rem;
+  grid-template-columns: 1.4fr 0.8fr;
+  gap: 0.8rem;
+  margin-bottom: 0.9rem;
 }
 
 .score-box {
-  background: rgba(15, 23, 42, 0.8);
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.9));
   border: 1px solid #334155;
-  border-radius: 16px;
+  border-radius: 18px;
   padding: 1rem;
   text-align: center;
 }
 
+.score-box.main {
+  background: linear-gradient(135deg, #7c3aed, #2563eb);
+}
+
+.score-box.alt {
+  background: linear-gradient(135deg, #0f766e, #0f172a);
+}
+
 .label {
   display: block;
-  font-size: 0.9rem;
-  color: #94a3b8;
-  margin-bottom: 0.4rem;
+  font-size: 0.85rem;
+  opacity: 0.9;
+  margin-bottom: 0.35rem;
 }
 
 .counter {
-  font-size: 3rem;
-  font-weight: 700;
+  font-size: 2.8rem;
+  font-weight: 800;
 }
 
 .counter.small {
-  font-size: 2rem;
+  font-size: 1.8rem;
+}
+
+.micro {
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+.xp-bar {
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.25);
+  overflow: hidden;
+  margin: 0.5rem 0 0.85rem;
+}
+
+.xp-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #facc15, #f97316);
+  transition: width 0.25s ease;
+}
+
+.stats-row {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.8rem;
+}
+
+.stat-pill {
+  padding: 0.55rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(30, 41, 59, 0.95);
+  color: #e2e8f0;
+  font-size: 0.95rem;
 }
 
 .actions {
@@ -148,7 +189,7 @@ input:focus {
   gap: 0.75rem;
   justify-content: center;
   flex-wrap: wrap;
-  margin-bottom: 0.6rem;
+  margin-bottom: 0.8rem;
 }
 
 button {
@@ -156,7 +197,7 @@ button {
   border-radius: 999px;
   padding: 0.8rem 1.2rem;
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
   transition: transform 0.15s ease, opacity 0.15s ease;
 }
@@ -178,13 +219,73 @@ button.small {
 }
 
 .primary {
-  background: #22c55e;
+  background: linear-gradient(135deg, #22c55e, #14b8a6);
   color: white;
 }
 
 .secondary {
   background: #475569;
   color: white;
+}
+
+.pulse {
+  animation: pulse 1.2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+}
+
+.shop {
+  margin-top: 1rem;
+  padding: 1rem;
+  border-radius: 18px;
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid #334155;
+}
+
+.shop-header p {
+  margin: 0.2rem 0 0;
+  color: #cbd5e1;
+  font-size: 0.95rem;
+}
+
+.card-list {
+  display: grid;
+  gap: 0.7rem;
+  margin-top: 0.8rem;
+}
+
+.shop-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.8rem;
+  border-radius: 14px;
+  background: rgba(30, 41, 59, 0.9);
+  border: 1px solid rgba(148, 163, 184, 0.16);
+}
+
+.shop-card strong {
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.shop-card .meta {
+  color: #cbd5e1;
+  font-size: 0.9rem;
+}
+
+.shop-actions {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.shop-actions button {
+  padding: 0.6rem 0.8rem;
+  font-size: 0.9rem;
 }
 
 .leaderboard {
@@ -207,4 +308,20 @@ button.small {
 .leaderboard .highlight {
   color: #86efac;
   font-weight: 700;
+}
+
+@media (max-width: 600px) {
+  .hero-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .game-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .shop-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }

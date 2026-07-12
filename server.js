@@ -18,17 +18,29 @@ const mimeTypes = {
   '.ico': 'image/x-icon'
 };
 
+function normalizeUser(user) {
+  return {
+    username: user.username,
+    password: user.password,
+    bestScore: Number(user.bestScore) || 0,
+    score: Number(user.score) || 0,
+    xp: Number(user.xp) || 0,
+    level: Number(user.level) || 1,
+    cards: Array.isArray(user.cards) ? user.cards : []
+  };
+}
+
 function readUsers() {
   try {
     const data = fs.readFileSync(usersFilePath, 'utf8');
-    return JSON.parse(data);
+    return JSON.parse(data).map(normalizeUser);
   } catch {
     return [];
   }
 }
 
 function writeUsers(users) {
-  fs.writeFileSync(usersFilePath, JSON.stringify(users, null, 2));
+  fs.writeFileSync(usersFilePath, JSON.stringify(users.map(normalizeUser), null, 2));
 }
 
 function sendJson(res, statusCode, payload) {
@@ -67,7 +79,15 @@ const server = http.createServer((req, res) => {
           return;
         }
 
-        users.push({ username, password, bestScore: 0 });
+        users.push({
+          username,
+          password,
+          bestScore: 0,
+          score: 0,
+          xp: 0,
+          level: 1,
+          cards: []
+        });
         writeUsers(users);
         sendJson(res, 201, { message: 'Compte créé avec succès.' });
       } catch {
@@ -93,7 +113,7 @@ const server = http.createServer((req, res) => {
           return;
         }
 
-        sendJson(res, 200, { username: user.username, bestScore: user.bestScore });
+        sendJson(res, 200, normalizeUser(user));
       } catch {
         sendJson(res, 400, { error: 'Requête invalide.' });
       }
@@ -101,25 +121,25 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  if (req.method === 'POST' && req.url === '/api/score') {
+  if (req.method === 'POST' && req.url === '/api/profile') {
     let body = '';
     req.on('data', (chunk) => {
       body += chunk.toString();
     });
     req.on('end', () => {
       try {
-        const { username, score } = JSON.parse(body);
+        const payload = JSON.parse(body);
         const users = readUsers();
-        const user = users.find((entry) => entry.username === username);
+        const user = users.find((entry) => entry.username === payload.username);
 
         if (!user) {
           sendJson(res, 404, { error: 'Utilisateur introuvable.' });
           return;
         }
 
-        user.bestScore = Math.max(user.bestScore, Number(score) || 0);
+        Object.assign(user, normalizeUser({ ...user, ...payload }));
         writeUsers(users);
-        sendJson(res, 200, { bestScore: user.bestScore });
+        sendJson(res, 200, normalizeUser(user));
       } catch {
         sendJson(res, 400, { error: 'Requête invalide.' });
       }
