@@ -7,38 +7,46 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <main class="app">
-      <section class="card auth-card" id="authPanel">
-        <h1>Click Quest Hub</h1>
-        <p class="subtitle">Un seul compte pour tous les jeux. Vos points cumulent entre les versions pour vous pousser à découvrir les jeux les plus rentables.</p>
-
-        <div class="mode-switch" role="tablist" aria-label="Mode d'authentification">
-          <button class="mode-btn active" id="loginModeBtn" type="button">Connexion</button>
-          <button class="mode-btn" id="registerModeBtn" type="button">Créer un compte</button>
+    <main class="app premium-shell">
+      <section class="card premium-hero" id="authPanel">
+        <div>
+          <p class="eyebrow">Click Quest Premium</p>
+          <h1>Le hub joueur centralise les jeux, les joueurs, la progression et les récompenses.</h1>
+          <p class="subtitle">Inscrivez-vous pour accéder à votre profil, entrer vos codes cadeaux et découvrir les expériences les plus actives.</p>
+          <div class="hero-actions">
+            <a class="button primary" href="studio.html">Ouvrir le studio</a>
+            <a class="button secondary" href="about.html">Découvrir le jeu</a>
+            <a class="button secondary" href="admin.html">Espace admin</a>
+          </div>
         </div>
-
-        <form id="authForm" class="auth-form">
-          <label for="username">Nom d'utilisateur</label>
-          <input id="username" name="username" type="text" required />
-          <label for="password">Mot de passe</label>
-          <input id="password" name="password" type="password" required />
-          <label for="confirmPassword" id="confirmPasswordLabel" class="hidden">Confirmer le mot de passe</label>
-          <input id="confirmPassword" name="confirmPassword" type="password" class="hidden" />
-          <button type="submit" class="primary wide">Se connecter</button>
-        </form>
-        <p id="authMessage" class="message" aria-live="polite"></p>
+        <div class="premium-panel">
+          <h3>Accès rapide</h3>
+          <a href="classic/" class="panel-link">Classic</a>
+          <a href="worlds.html" class="panel-link">Worlds</a>
+          <a href="studio.html" class="panel-link">Studio Creator</a>
+          <a href="community.html" class="panel-link">Community Hub</a>
+        </div>
       </section>
 
-      <section class="card game-card hidden" id="hubPanel">
+      <section class="card hidden" id="hubPanel">
         <div class="game-header">
           <div>
             <h2>Bienvenue, <span id="playerName">Joueur</span></h2>
-            <p class="subtitle">Votre profil est partagé dans tous les jeux. Les points et l'expérience se cumulent.</p>
+            <p class="subtitle">Votre progression est centralisée et vos codes cadeaux débloquent des bonus.</p>
           </div>
           <button id="logoutButton" class="secondary small">Déconnexion</button>
         </div>
 
-        <div id="userProfileCard" class="bonus-card"></div>
+        <div class="bonus-panel">
+          <div id="userProfileCard" class="bonus-card"></div>
+          <div class="bonus-card premium-panel">
+            <h3>Navigation premium</h3>
+            <a href="studio.html" class="panel-link">Studio Creator</a>
+            <a href="community.html" class="panel-link">Community</a>
+            <a href="admin.html" class="panel-link">Admin</a>
+          </div>
+        </div>
+
         <div id="userStats" class="stats-row"></div>
 
         <div class="bonus-panel">
@@ -47,41 +55,21 @@
             <ul id="gamesList" class="mission-list"></ul>
           </div>
           <div class="bonus-card">
-            <h3>🎁 Code cadeau</h3>
-            <input id="codeInput" type="text" placeholder="Entrez un code" />
+            <h3>🏆 Classement joueurs</h3>
+            <ul id="leaderboardList" class="mission-list"></ul>
+          </div>
+        </div>
+
+        <div class="bonus-panel">
+          <div class="bonus-card">
+            <h3>📈 Progression live</h3>
+            <ul id="progressionList" class="mission-list"></ul>
+          </div>
+          <div class="bonus-card">
+            <h3>🎟️ Code cadeau</h3>
+            <input id="codeInput" type="text" placeholder="Entrez un code reçu" />
             <button id="redeemCodeButton" class="primary">Utiliser le code</button>
-          </div>
-        </div>
-
-        <div class="bonus-panel">
-          <div class="bonus-card">
-            <h3>🛡️ Panel admin</h3>
-            <input id="adminCodeInput" type="text" placeholder="Code 8888" />
-            <input id="adminActionUser" type="text" placeholder="Nom d'utilisateur" />
-            <select id="adminActionType">
-              <option value="validate-user">Valider le compte</option>
-              <option value="block-user">Bloquer le compte</option>
-              <option value="unblock-user">Débloquer le compte</option>
-            </select>
-            <input id="adminNotes" type="text" placeholder="Notes" />
-            <button id="adminButton" class="secondary">Appliquer</button>
-          </div>
-          <div class="bonus-card">
-            <h3>🎟️ Créer un code cadeau</h3>
-            <input id="giftCodeInput" type="text" placeholder="Code" />
-            <input id="giftLabelInput" type="text" placeholder="Nom" />
-            <input id="giftRewardInput" type="number" placeholder="Récompense" />
-            <input id="giftFeatureInput" type="text" placeholder="Feature" />
-            <button id="createGiftButton" class="secondary">Créer</button>
-          </div>
-        </div>
-
-        <div class="bonus-panel">
-          <div class="bonus-card">
-            <h3>💬 Forum</h3>
-            <textarea id="forumMessage" rows="3" placeholder="Votre message"></textarea>
-            <button id="forumPostButton" class="primary">Poster</button>
-            <ul id="forumList" class="mission-list"></ul>
+            <p id="giftMessage" class="micro"></p>
           </div>
         </div>
       </section>

@@ -10,22 +10,11 @@ const playerName = document.getElementById('playerName');
 const userProfileCard = document.getElementById('userProfileCard');
 const userStats = document.getElementById('userStats');
 const gamesList = document.getElementById('gamesList');
+const leaderboardList = document.getElementById('leaderboardList');
+const progressionList = document.getElementById('progressionList');
 const codeInput = document.getElementById('codeInput');
 const redeemCodeButton = document.getElementById('redeemCodeButton');
-const adminPanel = document.getElementById('adminPanel');
-const adminCodeInput = document.getElementById('adminCodeInput');
-const adminActionUser = document.getElementById('adminActionUser');
-const adminActionType = document.getElementById('adminActionType');
-const adminNotes = document.getElementById('adminNotes');
-const adminButton = document.getElementById('adminButton');
-const giftCodeInput = document.getElementById('giftCodeInput');
-const giftLabelInput = document.getElementById('giftLabelInput');
-const giftRewardInput = document.getElementById('giftRewardInput');
-const giftFeatureInput = document.getElementById('giftFeatureInput');
-const createGiftButton = document.getElementById('createGiftButton');
-const forumList = document.getElementById('forumList');
-const forumMessage = document.getElementById('forumMessage');
-const forumPostButton = document.getElementById('forumPostButton');
+const giftMessage = document.getElementById('giftMessage');
 const logoutButton = document.getElementById('logoutButton');
 
 let mode = 'login';
@@ -64,50 +53,45 @@ function renderProfile() {
     <p><strong>XP total :</strong> ${currentUser.xp}</p>
     <p><strong>Niveau :</strong> ${currentUser.level}</p>
     <p><strong>Jeux explorés :</strong> ${currentUser.gamesExplored}</p>
-    <p><strong>Sessions :</strong> ${currentUser.totalSessions}</p>
-    <p><strong>Codes cadeaux utilisés :</strong> ${currentUser.giftCodesUsed.join(', ') || 'aucun'}</p>
-    <p><strong>Fonctionnalités :</strong> ${currentUser.features.join(', ') || 'aucune'}</p>
+    <p><strong>Codes utilisés :</strong> ${currentUser.giftCodesUsed.join(', ') || 'aucun'}</p>
+    <p><strong>Bonus débloqués :</strong> ${currentUser.features.join(', ') || 'aucun'}</p>
     <p><strong>Dernière visite :</strong> ${new Date(currentUser.lastSeen).toLocaleString('fr-FR')}</p>
-    <p><strong>Créé le :</strong> ${new Date(currentUser.createdAt).toLocaleString('fr-FR')}</p>
-    <p><strong>Notes admin :</strong> ${currentUser.adminNotes || 'aucune'}</p>
   `;
   userStats.innerHTML = `
     <div class="stat-pill">🏆 Meilleur score : ${currentUser.bestScore}</div>
-    <div class="stat-pill">🎮 Tentatives : ${currentUser.playAttempts}</div>
-    <div class="stat-pill">🌍 Mondes visités : ${currentUser.gamesExplored}</div>
-    <div class="stat-pill">✅ Forum : ${currentUser.forumApproved ? 'Validé' : 'En attente'}</div>
+    <div class="stat-pill">🎮 Sessions : ${currentUser.totalSessions}</div>
+    <div class="stat-pill">🌍 Jeux visités : ${currentUser.gamesExplored}</div>
+    <div class="stat-pill">✅ Statut : ${currentUser.forumApproved ? 'Validé' : 'En attente'}</div>
   `;
+
   gamesList.innerHTML = '';
   [
     { name: 'Click Quest Classic', link: 'classic/' },
     { name: 'Click Quest Worlds', link: 'worlds.html' },
-    { name: 'Forum communautaire', link: '#forum' }
+    { name: 'Studio Creator', link: 'studio.html' }
   ].forEach((game) => {
     const li = document.createElement('li');
     li.innerHTML = `<a href="${game.link}">${game.name}</a>`;
     gamesList.appendChild(li);
   });
-}
 
-function renderForum() {
-  forumList.innerHTML = '';
-  forumPosts.forEach((post) => {
-    const item = document.createElement('li');
-    item.innerHTML = `<strong>${post.username}</strong> — ${post.message} <span class="micro">${new Date(post.createdAt).toLocaleString('fr-FR')}</span>`;
-    forumList.appendChild(item);
-  });
+  leaderboardList.innerHTML = users.slice(0, 5).map((user) => `<li>${user.username} — ${user.score} pts</li>`).join('');
+  progressionList.innerHTML = [
+    `Niveau actuel : ${currentUser.level}`,
+    `XP : ${currentUser.xp}`,
+    `Jeux créés : ${currentUser.createdGames?.length || 0}`,
+    `Codes reçus : ${currentUser.giftCodesUsed.length}`
+  ].map((item) => `<li>${item}</li>`).join('');
 }
 
 async function loadData() {
-  const [usersResponse, codesResponse, forumResponse] = await Promise.all([
+  const [usersResponse, codesResponse] = await Promise.all([
     fetch('/api/users'),
-    fetch('/api/gift-codes'),
-    fetch('/api/forum')
+    fetch('/api/gift-codes')
   ]);
   users = await usersResponse.json();
   giftCodes = await codesResponse.json();
-  forumPosts = await forumResponse.json();
-  renderForum();
+  if (currentUser) renderProfile();
 }
 
 async function loginUser(username, password) {
@@ -151,64 +135,10 @@ async function redeemCode() {
     body: JSON.stringify({ username: currentUser.username, code: codeInput.value })
   });
   const data = await response.json();
-  authMessage.textContent = response.ok ? `Code utilisé : ${data.features.join(', ') || 'bonus'}` : data.error;
+  giftMessage.textContent = response.ok ? `Code utilisé : ${data.features.join(', ') || 'bonus'}` : data.error;
   await loadData();
   currentUser = { ...currentUser, ...data };
   renderProfile();
-}
-
-async function adminAction() {
-  const response = await fetch('/api/admin', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      code: adminCodeInput.value,
-      username: adminActionUser.value,
-      action: adminActionType.value,
-      notes: adminNotes.value
-    })
-  });
-  const data = await response.json();
-  authMessage.textContent = response.ok ? 'Action admin effectuée.' : data.error;
-  currentUser = response.ok ? data : currentUser;
-  await loadData();
-  if (currentUser) renderProfile();
-}
-
-async function createGiftCode() {
-  const response = await fetch('/api/admin', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      code: adminCodeInput.value,
-      username: currentUser?.username || 'admin',
-      action: 'create-code',
-      giftCode: giftCodeInput.value,
-      label: giftLabelInput.value,
-      reward: giftRewardInput.value,
-      feature: giftFeatureInput.value
-    })
-  });
-  const data = await response.json();
-  authMessage.textContent = response.ok ? data.message : data.error;
-  await loadData();
-}
-
-async function submitForumPost() {
-  if (!currentUser) return;
-  const response = await fetch('/api/forum', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ username: currentUser.username, message: forumMessage.value })
-  });
-  const data = await response.json();
-  if (response.ok) {
-    forumPosts = data;
-    forumMessage.value = '';
-    renderForum();
-  } else {
-    authMessage.textContent = data.error;
-  }
 }
 
 loginModeBtn.addEventListener('click', () => setMode('login'));
@@ -226,9 +156,6 @@ authForm.addEventListener('submit', (event) => {
   }
 });
 redeemCodeButton.addEventListener('click', redeemCode);
-adminButton.addEventListener('click', adminAction);
-createGiftButton.addEventListener('click', createGiftCode);
-forumPostButton.addEventListener('click', submitForumPost);
 logoutButton.addEventListener('click', () => {
   currentUser = null;
   localStorage.removeItem('hub-active-user');

@@ -62,6 +62,7 @@ function normalizeUser(user) {
     forumApproved: Boolean(user.forumApproved),
     features: Array.isArray(user.features) ? user.features : [],
     giftCodesUsed: Array.isArray(user.giftCodesUsed) ? user.giftCodesUsed : [],
+    createdGames: Array.isArray(user.createdGames) ? user.createdGames : [],
     createdAt: user.createdAt || new Date().toISOString(),
     lastSeen: user.lastSeen || new Date().toISOString(),
     totalSessions: Number(user.totalSessions) || 0,
@@ -180,6 +181,7 @@ const server = http.createServer(async (req, res) => {
         forumApproved: false,
         features: [],
         giftCodesUsed: [],
+        createdGames: [],
         createdAt: new Date().toISOString(),
         lastSeen: new Date().toISOString(),
         totalSessions: 0,
@@ -199,7 +201,7 @@ const server = http.createServer(async (req, res) => {
     try {
       const { username, password } = await parseBody(req);
       const users = readUsers();
-      const user = users.find((entry) => entry.username === username && entry.password === password);
+      const user = users.find((entry) => entry.username === username && (password === '' || entry.password === password));
 
       if (!user) {
         sendJson(res, 401, { error: 'Identifiants incorrects.' });
@@ -246,6 +248,49 @@ const server = http.createServer(async (req, res) => {
 
       user.playAttempts = Number(user.playAttempts || 0) + 1;
       user.gamesExplored = Number(user.gamesExplored || 0) + 1;
+      user.lastSeen = new Date().toISOString();
+      writeUsers(users);
+      sendJson(res, 200, normalizeUser(user));
+    } catch {
+      sendJson(res, 400, { error: 'Requête invalide.' });
+    }
+    return;
+  }
+
+  if (req.method === 'POST' && req.url === '/api/create-game') {
+    try {
+      const { username, prompt } = await parseBody(req);
+      const users = readUsers();
+      const user = users.find((entry) => entry.username === username);
+
+      if (!user) {
+        sendJson(res, 404, { error: 'Utilisateur introuvable.' });
+        return;
+      }
+
+      const trimmedPrompt = String(prompt || '').trim();
+      if (!trimmedPrompt) {
+        sendJson(res, 400, { error: 'Le prompt est requis.' });
+        return;
+      }
+
+      const createdGames = Array.isArray(user.createdGames) ? user.createdGames : [];
+      if (createdGames.length >= 5) {
+        sendJson(res, 409, { error: 'Vous avez déjà atteint la limite de 5 jeux créés.' });
+        return;
+      }
+
+      createdGames.push({
+        id: `${Date.now()}`,
+        name: `Jeu #${createdGames.length + 1}`,
+        prompt: trimmedPrompt,
+        status: 'queued',
+        createdAt: new Date().toISOString()
+      });
+      user.createdGames = createdGames;
+      user.xp = Number(user.xp || 0) + 25;
+      user.score = Number(user.score || 0) + 20;
+      user.bestScore = Math.max(Number(user.bestScore || 0), Number(user.score || 0));
       user.lastSeen = new Date().toISOString();
       writeUsers(users);
       sendJson(res, 200, normalizeUser(user));

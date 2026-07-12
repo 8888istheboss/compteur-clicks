@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Studio Creator</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="studio-body">
+    <main class="studio-shell">
+      <section class="studio-hero card">
+        <div class="studio-hero-copy">
+          <p class="eyebrow">Studio Creator Premium</p>
+          <h1>Transformez un simple prompt en un mini-jeu prêt à jouer.</h1>
+          <p class="subtitle">Le hub a été repensé autour d’une expérience plus claire : un studio créateur, un aperçu instantané et une bibliothèque de jeux générés.</p>
+          <div class="hero-actions">
+            <a class="button primary" href="#generator">Générer un jeu</a>
+            <a class="button secondary" href="#library">Voir la bibliothèque</a>
+          </div>
+        </div>
+        <div class="studio-hero-panel">
+          <div class="metric-card">
+            <strong id="gameCount">0</strong>
+            <span>jeux générés</span>
+          </div>
+          <div class="metric-card">
+            <strong>∞</strong>
+            <span>idées à explorer</span>
+          </div>
+          <div class="metric-card">
+            <strong>1 clic</strong>
+            <span>pour tester</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="card studio-generator" id="generator">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Création</p>
+            <h2>Décrivez votre idée</h2>
+          </div>
+          <p class="subtitle">Exemples : “un jeu de collecte magique”, “un runner space”, “un puzzle de lumière”.</p>
+        </div>
+        <form id="studioForm" class="studio-form">
+          <textarea id="promptInput" rows="5" placeholder="Décrivez le gameplay, le thème, les mécaniques et l’ambiance..." required></textarea>
+          <button type="submit" class="button primary wide">Générer le mini-jeu</button>
+        </form>
+        <p id="studioMessage" class="studio-message" aria-live="polite"></p>
+      </section>
+
+      <section class="card studio-preview">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Aperçu</p>
+            <h2>Mini-jeu généré</h2>
+          </div>
+          <a id="previewLink" class="button secondary small hidden" href="#" target="_blank" rel="noreferrer">Ouvrir en plein écran</a>
+        </div>
+        <iframe id="previewFrame" title="Aperçu du mini-jeu" class="preview-frame"></iframe>
+      </section>
+
+      <section class="card" id="library">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Bibliothèque</p>
+            <h2>Vos créations</h2>
+          </div>
+          <p class="subtitle">Chaque génération ajoute une nouvelle expérience à votre hub.</p>
+        </div>
+        <div id="gameLibrary" class="game-library"></div>
+      </section>
+    </main>
+
+    <script src="studio.js"></script>
+  </body>
+</html>

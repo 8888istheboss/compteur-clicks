@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Click Quest</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app premium-shell">
+      <section class="card premium-hero">
+        <div>
+          <p class="eyebrow">Espace administration</p>
+          <h1>Console d’administration sécurisée</h1>
+          <p class="subtitle">Accès réservé avec l’identifiant 8888istheboss et le mot de passe 8888.</p>
+        </div>
+        <div class="premium-panel">
+          <h3>Connexion admin</h3>
+          <form id="adminLoginForm" class="studio-form">
+            <input id="adminUsername" type="text" placeholder="Identifiant" required />
+            <input id="adminPassword" type="password" placeholder="Mot de passe" required />
+            <button type="submit" class="button primary">Entrer</button>
+          </form>
+          <p id="adminMessage" class="studio-message"></p>
+        </div>
+      </section>
+
+      <section id="adminPanel" class="card hidden">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Console</p>
+            <h2>Gestion des joueurs et des codes</h2>
+          </div>
+          <button id="adminLogout" class="button secondary small">Déconnexion</button>
+        </div>
+
+        <div class="bonus-panel">
+          <div class="bonus-card">
+            <h3>✅ Valider / bloquer</h3>
+            <input id="adminActionUser" type="text" placeholder="Nom d'utilisateur" />
+            <select id="adminActionType">
+              <option value="validate-user">Valider</option>
+              <option value="block-user">Bloquer</option>
+              <option value="unblock-user">Débloquer</option>
+            </select>
+            <input id="adminNotes" type="text" placeholder="Notes" />
+            <button id="adminButton" class="button secondary">Appliquer</button>
+          </div>
+          <div class="bonus-card">
+            <h3>🎟️ Créer un code cadeau</h3>
+            <input id="giftCodeInput" type="text" placeholder="Code" />
+            <input id="giftLabelInput" type="text" placeholder="Nom" />
+            <input id="giftRewardInput" type="number" placeholder="Récompense" />
+            <input id="giftFeatureInput" type="text" placeholder="Feature" />
+            <button id="createGiftButton" class="button secondary">Créer</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="admin.js"></script>
+  </body>
+</html>

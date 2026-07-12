@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Community Platform</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app">
+      <section class="card auth-card" id="authPanel">
+        <h1>Community Platform</h1>
+        <p class="subtitle">Validez vos comptes, gérez votre profil, créez jusqu’à 5 jeux via prompts et laissez l’admin activer les codes pour débloquer des capacités.</p>
+        <div class="mode-switch" role="tablist" aria-label="Mode d'authentification">
+          <button class="mode-btn active" id="loginModeBtn" type="button">Connexion</button>
+          <button class="mode-btn" id="registerModeBtn" type="button">Créer un compte</button>
+        </div>
+        <form id="authForm" class="auth-form">
+          <label for="username">Nom d'utilisateur</label>
+          <input id="username" name="username" type="text" required />
+          <label for="password">Mot de passe</label>
+          <input id="password" name="password" type="password" required />
+          <label for="confirmPassword" id="confirmPasswordLabel" class="hidden">Confirmer le mot de passe</label>
+          <input id="confirmPassword" name="confirmPassword" type="password" class="hidden" />
+          <button type="submit" class="primary wide">Se connecter</button>
+        </form>
+        <p id="authMessage" class="message" aria-live="polite"></p>
+      </section>
+
+      <section class="card game-card hidden" id="hubPanel">
+        <div class="game-header">
+          <div>
+            <h2>Bienvenue, <span id="playerName">Joueur</span></h2>
+            <p class="subtitle">Votre compte est partagé dans tous les jeux. Vous pouvez créer jusqu’à 5 jeux, voir les autres joueurs et progresser dans la communauté.</p>
+          </div>
+          <button id="logoutButton" class="secondary small">Déconnexion</button>
+        </div>
+
+        <div id="playerProfile" class="bonus-card"></div>
+
+        <div class="bonus-panel">
+          <div class="bonus-card">
+            <h3>🧠 Créer un jeu</h3>
+            <textarea id="promptInput" rows="4" placeholder="Expliquez votre idée de jeu, votre gameplay, vos mécaniques et votre univers..."></textarea>
+            <button id="createGameButton" class="primary">Envoyer le prompt</button>
+            <p class="micro">La boucle VS Code → GitHub → Railway se déclenche automatiquement à partir du prompt.</p>
+          </div>
+          <div class="bonus-card">
+            <h3>🔓 Code d'accès</h3>
+            <input id="accessCodeInput" type="text" placeholder="Entrez le code admin" />
+            <button id="unlockButton" class="secondary">Activer</button>
+          </div>
+        </div>
+
+        <div class="bonus-panel">
+          <div class="bonus-card">
+            <h3>🧾 Mes jeux</h3>
+            <ul id="gameList" class="mission-list"></ul>
+          </div>
+          <div class="bonus-card">
+            <h3>🌍 Communauté</h3>
+            <ul id="communityList" class="mission-list"></ul>
+          </div>
+        </div>
+
+        <div class="bonus-panel">
+          <div class="bonus-card">
+            <h3>🛡️ Admin</h3>
+            <input id="adminCodeInput" type="text" placeholder="Code 8888" />
+            <input id="adminActionUser" type="text" placeholder="Nom d'utilisateur" />
+            <select id="adminActionType">
+              <option value="validate-user">Valider le compte</option>
+              <option value="block-user">Bloquer le compte</option>
+              <option value="unblock-user">Débloquer le compte</option>
+            </select>
+            <input id="adminNotes" type="text" placeholder="Notes" />
+            <button id="adminButton" class="secondary">Appliquer</button>
+          </div>
+          <div class="bonus-card">
+            <h3>🎟️ Créer un code</h3>
+            <input id="codeNameInput" type="text" placeholder="Nom du code" />
+            <input id="codeTypeInput" type="text" placeholder="Type de code" />
+            <input id="codeValueInput" type="number" placeholder="Valeur" />
+            <button id="createCodeButton" class="secondary">Créer</button>
+          </div>
+        </div>
+
+        <div class="bonus-panel">
+          <div class="bonus-card">
+            <h3>💬 Forum</h3>
+            <textarea id="forumMessage" rows="3" placeholder="Votre message"></textarea>
+            <button id="forumPostButton" class="primary">Poster</button>
+            <ul id="forumList" class="mission-list"></ul>
+          </div>
+        </div>
+      </section>
+    </main>
+    <script src="community.js"></script>
+  </body>
+</html>
