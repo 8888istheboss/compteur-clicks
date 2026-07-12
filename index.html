@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Compteur de clics - Classement</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app">
+      <section class="card auth-card" id="authPanel">
+        <h1>Compteur de clics</h1>
+        <p class="subtitle">Créez un compte ou connectez-vous pour sauvegarder votre score et voir le classement.</p>
+
+        <div class="mode-switch" role="tablist" aria-label="Mode d'authentification">
+          <button class="mode-btn active" id="loginModeBtn" type="button">Connexion</button>
+          <button class="mode-btn" id="registerModeBtn" type="button">Créer un compte</button>
+        </div>
+
+        <form id="authForm" class="auth-form">
+          <label for="username">Nom d'utilisateur</label>
+          <input id="username" name="username" type="text" required />
+
+          <label for="password">Mot de passe</label>
+          <input id="password" name="password" type="password" required />
+
+          <label for="confirmPassword" id="confirmPasswordLabel" class="hidden">Confirmer le mot de passe</label>
+          <input id="confirmPassword" name="confirmPassword" type="password" class="hidden" />
+
+          <button type="submit" class="primary wide">Se connecter</button>
+        </form>
+        <p id="authMessage" class="message" aria-live="polite"></p>
+      </section>
+
+      <section class="card game-card hidden" id="gamePanel">
+        <div class="game-header">
+          <div>
+            <h2>Bienvenue, <span id="playerName">Joueur</span></h2>
+            <p class="subtitle">Cliquez pour faire monter votre score.</p>
+          </div>
+          <button id="logoutButton" class="secondary small">Déconnexion</button>
+        </div>
+
+        <div class="score-grid">
+          <div class="score-box">
+            <span class="label">Score actuel</span>
+            <div id="counter" class="counter">0</div>
+          </div>
+          <div class="score-box">
+            <span class="label">Meilleur score</span>
+            <div id="bestScore" class="counter small">0</div>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button id="clickButton" class="primary">Clic !</button>
+          <button id="resetButton" class="secondary">Réinitialiser</button>
+        </div>
+
+        <p id="saveMessage" class="message" aria-live="polite">Votre score est sauvegardé automatiquement.</p>
+
+        <div class="leaderboard">
+          <h3>Classement</h3>
+          <ol id="leaderboardList"></ol>
+        </div>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
