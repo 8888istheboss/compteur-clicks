@@ -145,6 +145,96 @@ body {
   border: 1px solid rgba(148, 163, 184, 0.2);
 }
 
+.animal-game-panel {
+  display: grid;
+  gap: 1rem;
+}
+
+.animal-world {
+  min-height: 320px;
+  border-radius: 22px;
+  background: linear-gradient(180deg, #7dd3fc, #1d4ed8 70%, #0f172a);
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  box-shadow: inset 0 -20px 40px rgba(0,0,0,0.25);
+}
+
+.sky-glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at top, rgba(255,255,255,0.28), transparent 50%);
+  pointer-events: none;
+}
+
+.animal {
+  position: absolute;
+  font-size: 3.2rem;
+  cursor: pointer;
+  filter: drop-shadow(0 8px 16px rgba(0,0,0,0.3));
+  animation: float 1.4s ease-in-out infinite;
+  transform-style: preserve-3d;
+}
+
+.animal:hover {
+  transform: scale(1.08);
+}
+
+.animal-cat { left: 10%; top: 48%; }
+.animal-dog { left: 34%; top: 42%; }
+.animal-bird { left: 56%; top: 24%; }
+.animal-fish { left: 72%; top: 58%; }
+.animal-rabbit { left: 80%; top: 48%; }
+.animal-fox { left: 24%; top: 58%; }
+
+.animal-menu {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.menu-card {
+  padding: 1rem;
+  border-radius: 16px;
+  background: rgba(30, 41, 59, 0.85);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-8px) rotate(-4deg); }
+}
+
+.tycon-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+.tycon-card {
+  padding: 1rem;
+  border-radius: 16px;
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.tycon-flow {
+  display: grid;
+  gap: 0.6rem;
+  margin-top: 1rem;
+}
+
+.tycon-step {
+  padding: 0.8rem 1rem;
+  border-radius: 12px;
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+@keyframes bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
 .studio-hero {
   display: grid;
   grid-template-columns: 1.6fr 0.8fr;

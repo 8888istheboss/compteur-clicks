@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Animal Care Immersive</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app about-shell">
+      <section class="card about-hero">
+        <p class="eyebrow">Mini-jeu immersif</p>
+        <h1>Animal Care 3D</h1>
+        <p class="subtitle">Gérez une ménagerie vivante : nourrissez, soignez, jouez et faites évoluer votre refuge animalier avec une ambiance immersive.</p>
+      </section>
+
+      <section class="card about-section">
+        <div class="animal-game-panel">
+          <div class="animal-world" id="animalWorld">
+            <div class="sky-glow"></div>
+            <div class="animal animal-cat" data-animal="chat">🐱</div>
+            <div class="animal animal-dog" data-animal="chien">🐶</div>
+            <div class="animal animal-bird" data-animal="oiseau">🦜</div>
+            <div class="animal animal-fish" data-animal="poisson">🐠</div>
+            <div class="animal animal-rabbit" data-animal="lapin">🐰</div>
+            <div class="animal animal-fox" data-animal="renard">🦊</div>
+          </div>
+
+          <div class="animal-menu">
+            <div class="menu-card">
+              <h3>Actions</h3>
+              <button class="button primary" id="feedBtn">Nourrir</button>
+              <button class="button secondary" id="healBtn">Soigner</button>
+              <button class="button secondary" id="playBtn">Jouer</button>
+            </div>
+            <div class="menu-card">
+              <h3>État</h3>
+              <p id="gameMessage">Sélectionnez une action et cliquez sur un animal.</p>
+              <div class="stats-row">
+                <div class="stat-pill" id="score">Score : 0</div>
+                <div class="stat-pill" id="level">Niveau : 1</div>
+                <div class="stat-pill" id="hunger">Faim : 100</div>
+                <div class="stat-pill" id="health">Santé : 100</div>
+                <div class="stat-pill" id="happiness">Joyeux : 100</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="animal-game.js"></script>
+  </body>
+</html>
