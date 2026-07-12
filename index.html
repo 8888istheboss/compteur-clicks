@@ -3,102 +3,28 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Click Quest</title>
+    <title>Click Quest Hub</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <main class="app">
-      <section class="card auth-card" id="authPanel">
-        <h1>Click Quest</h1>
-        <p class="subtitle">Créez un compte, progressez en XP, débloquez des cartes et faites grimper votre score.</p>
-
-        <div class="mode-switch" role="tablist" aria-label="Mode d'authentification">
-          <button class="mode-btn active" id="loginModeBtn" type="button">Connexion</button>
-          <button class="mode-btn" id="registerModeBtn" type="button">Créer un compte</button>
-        </div>
-
-        <form id="authForm" class="auth-form">
-          <label for="username">Nom d'utilisateur</label>
-          <input id="username" name="username" type="text" required />
-
-          <label for="password">Mot de passe</label>
-          <input id="password" name="password" type="password" required />
-
-          <label for="confirmPassword" id="confirmPasswordLabel" class="hidden">Confirmer le mot de passe</label>
-          <input id="confirmPassword" name="confirmPassword" type="password" class="hidden" />
-
-          <button type="submit" class="primary wide">Se connecter</button>
-        </form>
-        <p id="authMessage" class="message" aria-live="polite"></p>
-      </section>
-
-      <section class="card game-card hidden" id="gamePanel">
-        <div class="game-header">
-          <div>
-            <h2>Bienvenue, <span id="playerName">Joueur</span></h2>
-            <p class="subtitle">Cliquez, faites tourner vos automates, vendez au bon moment et grimperez en niveau.</p>
-          </div>
-          <button id="logoutButton" class="secondary small">Déconnexion</button>
-        </div>
-
-        <div class="hero-panel">
-          <div class="score-box main">
-            <span class="label">Clicks</span>
-            <div id="counter" class="counter">0</div>
-            <div class="micro">+<span id="clickValue">1</span> par clic</div>
-          </div>
-          <div class="score-box alt">
-            <span class="label">Niveau</span>
-            <div id="level" class="counter small">1</div>
-            <div class="micro" id="xpText">0 / 100 XP</div>
-          </div>
-        </div>
-
-        <div class="xp-bar" aria-label="Progression XP">
-          <div id="xpFill" class="xp-fill"></div>
-        </div>
-
-        <div class="stats-row">
-          <div class="stat-pill">⚡ Auto-clicks <span id="cpsDisplay">0/s</span></div>
-          <div class="stat-pill">🏆 Meilleur <span id="bestScoreDisplay">0</span></div>
-        </div>
-
-        <div class="actions">
-          <button id="clickButton" class="primary pulse">⚡ Clic !</button>
-          <button id="resetButton" class="secondary">Reset</button>
-        </div>
-
-        <p id="saveMessage" class="message" aria-live="polite">Votre progression est sauvegardée automatiquement.</p>
-
-        <div class="shop">
-          <div class="shop-header">
-            <h3>🃏 Cartes de production</h3>
-            <p>Achetez pour générer des clicks automatiques, vendez pour récupérer la moitié du prix.</p>
-          </div>
-          <div id="cardList" class="card-list"></div>
-        </div>
+      <section class="card auth-card">
+        <h1>Click Quest Hub</h1>
+        <p class="subtitle">Choisissez une version du jeu. L’ancienne expérience reste disponible, et chaque nouvelle version peut être ajoutée à part.</p>
 
         <div class="bonus-panel">
           <div class="bonus-card">
-            <h3>🎁 Cadeaux du jour</h3>
-            <p>Réclame un bonus chaque fois que tu reviens.</p>
-            <button id="claimGiftButton" class="primary">Réclamer +100 clicks</button>
+            <h3>🕹️ Version originale</h3>
+            <p>Le premier jeu de clics, conservé tel quel.</p>
+            <a href="classic/" class="primary button-link">Ouvrir le jeu classique</a>
           </div>
           <div class="bonus-card">
-            <h3>🎯 Missions</h3>
-            <ul id="missionList" class="mission-list"></ul>
+            <h3>🌍 Nouveau jeu : Click Quest Worlds</h3>
+            <p>Ajoutez des mondes, des bonus, du prestige, des événements et des compétences actives.</p>
+            <a href="worlds.html" class="primary button-link">Ouvrir Click Quest Worlds</a>
           </div>
-        </div>
-
-        <div id="celebrationBanner" class="celebration-banner hidden" role="status" aria-live="polite"></div>
-
-        <div class="leaderboard">
-          <h3>Classement</h3>
-          <ol id="leaderboardList"></ol>
         </div>
       </section>
     </main>
-
-    <script src="script.js"></script>
   </body>
 </html>

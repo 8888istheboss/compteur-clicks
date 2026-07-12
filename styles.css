@@ -218,6 +218,22 @@ button.small {
   padding: 0.6rem 0.9rem;
 }
 
+.button-link {
+  display: inline-block;
+  text-decoration: none;
+  text-align: center;
+}
+
+.menu-list {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.menu-list button {
+  width: 100%;
+  justify-content: center;
+}
+
 .primary {
   background: linear-gradient(135deg, #22c55e, #14b8a6);
   color: white;

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Click Quest Worlds</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app">
+      <section class="card game-card">
+        <div class="game-header">
+          <div>
+            <h2>Click Quest Worlds</h2>
+            <p class="subtitle">Un nouveau jeu de mondes, de bonus, de prestige et d’éléments actifs.</p>
+          </div>
+          <a href="index.html" class="secondary small button-link">Retour au hub</a>
+        </div>
+
+        <div class="hero-panel">
+          <div class="score-box main">
+            <span class="label">Points</span>
+            <div id="worldPoints" class="counter">0</div>
+            <div class="micro">+<span id="clickPowerValue">1</span> par clic</div>
+          </div>
+          <div class="score-box alt">
+            <span class="label">Monde actuel</span>
+            <div id="worldName" class="counter small">Forgeron Fantasy</div>
+            <div class="micro" id="worldLevelText">Niveau 1</div>
+          </div>
+        </div>
+
+        <div class="xp-bar" aria-label="Progression du monde">
+          <div id="worldProgressFill" class="xp-fill"></div>
+        </div>
+
+        <div class="stats-row">
+          <div class="stat-pill">⚡ Compétence active <span id="activeSkillText">Aucune</span></div>
+          <div class="stat-pill">🏆 Prestige <span id="prestigeDisplay">0</span></div>
+        </div>
+
+        <div class="actions">
+          <button id="clickWorldButton" class="primary pulse">⚡ Jouer</button>
+          <button id="activateSkillButton" class="secondary">⚡ x10 pendant 30s</button>
+          <button id="prestigeButton" class="secondary">🌟 Prestige</button>
+        </div>
+
+        <div class="bonus-panel">
+          <div class="bonus-card">
+            <h3>🧭 Menu</h3>
+            <div id="worldMenu" class="menu-list"></div>
+          </div>
+          <div class="bonus-card">
+            <h3>🃏 Bonus</h3>
+            <ul id="bonusList" class="mission-list"></ul>
+          </div>
+        </div>
+
+        <div class="shop">
+          <div class="shop-header">
+            <h3>🧰 Cartes / bonus du monde</h3>
+            <p>Achetez des améliorations, des compagnons, des skins et débloquez des mondes.</p>
+          </div>
+          <div id="worldCardList" class="card-list"></div>
+        </div>
+
+        <div class="leaderboard">
+          <h3>Événements</h3>
+          <ol id="eventList"></ol>
+        </div>
+      </section>
+    </main>
+
+    <script src="worlds.js"></script>
+  </body>
+</html>
